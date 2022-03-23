@@ -48,8 +48,11 @@ def receiveEcoWitt():
     Connection: close
     '''        
     
+    
+    remote_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)   
+    
     fieldset = {}
-    tagset = {}
+    tagset = {"submitted_by" : remote_ip}
     
     # Iterate over each pair in the post body
     data = request.form
