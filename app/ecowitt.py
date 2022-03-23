@@ -62,9 +62,9 @@ def receiveEcoWitt():
         if key in IGNORE:
             continue
 
-        if key.endswith("batt"):
-            # Not clear what it is, always seems to read 0
-            continue
+        #if key.endswith("batt"):
+        #    # Not clear what it is, always seems to read 0
+        #    continue
 
         # The dict isn't actually a dict, but an immutable dict like object
         # copy the value into a var so we can modify it as needed
