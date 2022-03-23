@@ -90,7 +90,7 @@ def write_lp(lp):
     # Set up to send into Influx
     with influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG) as client:
         write_api = client.write_api(write_options=SYNCHRONOUS)
-        write_api.write(INFLUX_BUCKET, lp)
+        write_api.write(INFLUX_BUCKET, INFLUX_ORG, lp)
         
     
     
