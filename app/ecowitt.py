@@ -21,7 +21,7 @@ INFLUX_ORG = ""
 INFLUX_TOKEN = ""
 # Store the URL of your InfluxDB instance
 INFLUX_URL="http://192.168.3.84:8086"
-
+DEBUG=False
 
 @app.route('/')
 def version():
@@ -57,7 +57,8 @@ def receiveEcoWitt():
     # Iterate over each pair in the post body
     data = request.form
     for key in data:
-        print(f"{key}: {data[key]}\n")
+        if DEBUG:
+            print(f"{key}: {data[key]}\n")
 
         if key in IGNORE:
             continue
@@ -93,7 +94,10 @@ def receiveEcoWitt():
     # turn it into LP
     lp = build_lp(tagset, fieldset)
     write_lp(lp)
-    print(lp)
+    
+    if DEBUG:
+        print(lp)
+        
     return lp
 
 
