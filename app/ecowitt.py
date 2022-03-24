@@ -3,11 +3,10 @@
 # Receive Ecowitt format payloads and write them out to InfluxDB
 #
 
-from flask import Flask, request
 import influxdb_client
+
+from flask import Flask, request
 from influxdb_client.client.write_api import SYNCHRONOUS
-
-
 
 app = Flask(__name__)
 
@@ -30,6 +29,9 @@ def version():
 
 @app.route('/data/report/', methods=['POST'])
 def receiveEcoWitt():
+    ''' Receive a post in Ecowitt protocol format and process it 
+    
+    '''
 
     '''
     From packet capture
@@ -103,14 +105,14 @@ def receiveEcoWitt():
 
 
 def write_lp(lp):
-    # Set up to send into Influx
+    ''' Set up to send into Influx
+    '''
     with influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG) as client:
         write_api = client.write_api(write_options=SYNCHRONOUS)
         write_api.write(INFLUX_BUCKET, INFLUX_ORG, lp)
         
     
     
-
 def build_lp(tagset, fieldset):
     ''' Build some line protocol
     '''
@@ -138,4 +140,3 @@ def convertFtoC(f):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8090, debug=DEBUG)
-
