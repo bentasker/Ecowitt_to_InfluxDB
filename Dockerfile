@@ -1,9 +1,9 @@
 FROM python
 
-ENV IGNORE = "PASSKEY,stationtype,dateutc,freq"
+ENV IGNORE "PASSKEY,stationtype,dateutc,freq"
 ENV TAGS "model"
 ENV MEASUREMENT "weather"
-ENV DEBUG
+ENV DEBUG ""
 ENV INFLUX_BUCKET "testing_db"
 ENV INFLUX_ORG ""
 ENV INFLUX_TOKEN ""
