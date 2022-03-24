@@ -32,6 +32,16 @@ Writing into an authenticated Influx 1.x instance
     -e INFLUX_BUCKET="weather" \
     -e INLUX_TOKEN="ben:secretpassword" \
     bentasker12/ecowitt_listener
+    
+Writing into an OSS 2.x instance
+
+    docker run -d \
+    -p 8090:8090 \
+    -e INFLUX_URL="http://myinfluxinstance:8086" \
+    -e INFLUX_ORG="myaddress@example.invalid" \
+    -e INLUX_TOKEN="====" \
+    -e INFLUX_BUCKET="weather" \
+    bentasker12/ecowitt_listener
 
 ----
     
