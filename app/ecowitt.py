@@ -4,6 +4,7 @@
 #
 
 import influxdb_client
+import os
 
 from flask import Flask, request
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -11,16 +12,16 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 app = Flask(__name__)
 
 # Todo - take these from the environment
-IGNORE = ["PASSKEY","stationtype","dateutc","freq"]
-TAGS = ["model"]
-MEASUREMENT="weather"
+IGNORE = os.getenv("IGNORE", "PASSKEY,stationtype,dateutc,freq").split(",")
+TAGS = os.getenv("TAGS", "model").split(",")
+MEASUREMENT = os.getenv("MEASUREMENT", "weather")
 
-INFLUX_BUCKET = "testing_db"
-INFLUX_ORG = ""
-INFLUX_TOKEN = ""
+INFLUX_BUCKET = os.getenv("INFLUX_BUCKET", "testing_db")
+INFLUX_ORG = os.getenv("INFLUX_ORG", "")
+INFLUX_TOKEN = os.getenv("INFLUX_TOKEN", "")
 # Store the URL of your InfluxDB instance
-INFLUX_URL="http://192.168.3.84:8086"
-DEBUG=False
+INFLUX_URL = os.getenv("INFLUX_URL", "http://192.168.3.84:8086")
+DEBUG = os.getenv("DEBUG", False)
 
 @app.route('/')
 def version():
