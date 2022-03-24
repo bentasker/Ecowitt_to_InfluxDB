@@ -1,5 +1,10 @@
 FROM python
 
+LABEL org.opencontainers.image.authors="github@bentasker.co.uk"
+LABEL org.opencontainers.image.source="https://github.com/bentasker/Ecowitt_to_InfluxDB"
+LABEL org.opencontainers.image.licenses="BSD-3-Clause"
+
+
 ENV IGNORE "PASSKEY,stationtype,dateutc,freq"
 ENV TAGS "model"
 ENV MEASUREMENT "weather"

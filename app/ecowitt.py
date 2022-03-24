@@ -2,6 +2,11 @@
 #
 # Receive Ecowitt format payloads and write them out to InfluxDB
 #
+#
+# Copyright (c) 2022 B Tasker
+#
+# Released under BSD-3-Clause License, see LICENSE in the root of the project repo
+#
 
 import influxdb_client
 import os

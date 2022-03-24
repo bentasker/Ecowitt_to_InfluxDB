@@ -89,3 +89,11 @@ Tags added are
 * `submitted_by`: The IP address of the unit writing stats in
 
 Fields can be converted to tags by including their name in the environment variable `TAGS`.
+
+----
+
+### License
+
+Copyright (c) 2022 Ben Tasker.
+
+Released under [BSD-3-Clause](LICENSE)
