@@ -23,6 +23,12 @@ INFLUX_TOKEN = os.getenv("INFLUX_TOKEN", "")
 INFLUX_URL = os.getenv("INFLUX_URL", "http://192.168.3.84:8086")
 DEBUG = os.getenv("DEBUG", False)
 
+# Do we convert from Freedom units
+RAIN_MM = (os.getenv("RAIN_MM", "yes") == "yes")
+PRESSURE_HPA  = (os.getenv("PRESSURE_HPA", "yes") == "yes")
+TEMP_C = (os.getenv("TEMP_C", "yes") == "yes")
+SPEED_KPH = (os.getenv("SPEED_KPH", "yes") == "yes")
+
 @app.route('/')
 def version():
     return "Ecowitt listener\n"
@@ -77,19 +83,28 @@ def receiveEcoWitt():
             tagset[key] = val
             continue
         
-        if key.startswith("temp") and key.endswith("f"):
+        if TEMP_C and key.startswith("temp") and key.endswith("f"):
             val = convertFtoC(val)
             key = key[:-1] + 'c'
 
-        if key.startswith("barom") and key.endswith("in"):
+        if PRESSURE_HPA and key.startswith("barom") and key.endswith("in"):
             # Convert inches to hPa
             val = float(val) * 33.6585
             key = key[:-2] + 'hpa'
 
-        if key.endswith("rainin"):
+        if RAIN_MM and key.endswith("rainin"):
             # Convert inches to mm
             val = float(val) * 25.4
             key = key[:-2] + 'mm'
+
+        if SPEED_KPH and key.endswith('mph'):
+            speed = float(value) * 1.60934
+            key = key[:-3] + 'kph'
+
+        if SPEED_KPH and key == "maxdailygust":
+            speed = float(value) * 1.60934
+            key += "kph"
+            
 
         # Push into the fields dict
         fieldset[key] = val
