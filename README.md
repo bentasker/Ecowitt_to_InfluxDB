@@ -114,6 +114,11 @@ If you wish to use this, you need to set the following environment variables
 
 Your site ID is a uuid (something like `ffffffff-aaaa-1111-cccc-kkkkkkkk`). The PIN is whatever you put in the field `Authentication Key` when setting up the site.
 
+----
+
+### Examples and more
+
+There's a post at [https://www.bentasker.co.uk/posts/blog/house-stuff/receiving-weather-info-from-ecowitt-weather-station-and-writing-to-influxdb.html](https://www.bentasker.co.uk/posts/blog/house-stuff/receiving-weather-info-from-ecowitt-weather-station-and-writing-to-influxdb.html) which gives more detail on how to stand this up, as well as integrate it with WOW
 
 ----
 
