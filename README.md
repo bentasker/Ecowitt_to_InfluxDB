@@ -74,7 +74,7 @@ The name of some fields seems to differ between device.
 * `weeklyrainin`/`weeklyrainmm`: Total rain recorded in inches/mm this week
 * `dailyrainin`/`dailyrainmm`: Total rain recorded in inches/mm today
 * `hourlyrainin`/`hourlyrainmm`: Total rain recorded in inches/mm in this hour
-* `eventrainin`/`eventrainmm`: Total rain recorded in inches/mm so far in this shower
+* `eventrainin`/`eventrainmm`: Total rain recorded in inches/mm in the most recent shower
 * `rainratein`/`rainratemm`: Current rainfall rate in inches/mm
 * `uv`: UV index
 * `solarradiation`: Solar radiation (w/m2)
