@@ -97,7 +97,7 @@ def receiveEcoWitt():
             val = float(val) * 33.6585
             key = key[:-2] + 'hpa'
 
-        if RAIN_MM and key.endswith("rainin"):
+        if RAIN_MM and (key.endswith("rainin") or key == "rainratein"):
             # Convert inches to mm
             val = float(val) * 25.4
             key = key[:-2] + 'mm'
