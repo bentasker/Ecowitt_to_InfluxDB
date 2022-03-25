@@ -10,7 +10,10 @@
 
 import influxdb_client
 import os
+import requests
+import sys
 
+from datetime import datetime
 from flask import Flask, request
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -33,6 +36,16 @@ RAIN_MM = (os.getenv("RAIN_MM", "yes") == "yes")
 PRESSURE_HPA  = (os.getenv("PRESSURE_HPA", "yes") == "yes")
 TEMP_C = (os.getenv("TEMP_C", "yes") == "yes")
 SPEED_KPH = (os.getenv("SPEED_KPH", "yes") == "yes")
+
+
+# Should we pass onward to Met Office WOW?
+MET_OFFICE_WOW_ENABLED = (os.getenv("MET_OFFICE_WOW_ENABLED", "yes") == "yes")
+MET_OFFICE_SITE_ID = os.getenv("MET_OFFICE_SITE_ID", False)
+MET_OFFICE_SITE_PIN = os.getenv("MET_OFFICE_SITE_PIN", False)
+MET_OFFICE_SOFTWARE_IDENT = os.getenv("MET_OFFICE_SOFTWARE_IDENT", "github.com/bentasker/Ecowitt_to_InfluxDB")
+MET_OFFICE_UPDATE_INTERVAL = int(os.getenv("MET_OFFICE_UPDATE_INTERVAL", 5))
+MET_OFFICE_URL = os.getenv("MET_OFFICE_URL", "https://wow.metoffice.gov.uk/automaticreading")
+
 
 @app.route('/')
 def version():
@@ -123,9 +136,64 @@ def receiveEcoWitt():
     if DEBUG:
         print(pt)
         
+    # Pass on to optionally push out to the Met's service
+    write_wow_data(data, fieldset)
     return ''
 
 
+def build_wow_params(pd, fieldset):
+    ''' Build the params that'll be sent onto the Met Office - these will be turned into a QS later
+    
+    Not going to lie, I wish I'd looked at their docs much earlier, turns out
+    Ecowitt's protocol is basically identical to it.
+    
+    https://wow.metoffice.gov.uk/support/dataformats#automatic
+    '''
+    params = {
+        'siteid' : MET_OFFICE_SITE_ID,
+        'siteAuthenticationKey' : MET_OFFICE_SITE_PIN,
+        'softwaretype' : MET_OFFICE_SOFTWARE_IDENT,
+        }
+    
+    if "dateutc" in pd:
+        params['dateutc'] = pd['dateutc']
+    else:
+        params['dateutc'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+    if "baromrelin" in pd:
+        params['baromin'] = pd['baromrelin']
+
+    # Some of the fields are identical between protocols
+    direct_translations = ["dailyrainin", "humidity", "tempf", "winddir", "windspeedmph", "windgustmph"]
+    for field in direct_translations:
+        if field in pd:
+            params[field] = pd[field]
+    
+    return params
+
+def write_wow_data(pd, fieldset):
+    ''' If writing into the MET Office's WOW is enabled, build the request
+    '''
+    
+    if not MET_OFFICE_WOW_ENABLED:
+        return
+    
+    
+    if (not int(datetime.utcnow().strftime('%M')) % MET_OFFICE_UPDATE_INTERVAL):
+        # Skip this iteration
+        return
+    
+    # Otherwise, build the query string
+    params = build_wow_params(pd, fieldset)
+    
+    try:
+        r = requests.get(MET_OFFICE_URL, params=params)
+        print("MET says {}".format(r.status_code))
+    except:
+        print("Warn: failed to submit to Met office")
+    
+    
+    
 
 def write_lp(pt):
     ''' Set up to send into Influx
@@ -157,5 +225,10 @@ def convertFtoC(f):
     return (float(f) - 32) * 5 /9
     
 
+
 if __name__ == "__main__":
+    if MET_OFFICE_WOW_ENABLED and (not MET_OFFICE_SITE_ID or not MET_OFFICE_SITE_PIN):
+        print("ERROR: You've enabled WOW integration by not provided MET_OFFICE_SITE_ID or MET_OFFICE_SITE_PIN")
+        sys.exit(1)
+        
     app.run(host="0.0.0.0", port=8090, debug=DEBUG)

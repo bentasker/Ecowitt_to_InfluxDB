@@ -102,6 +102,21 @@ Fields can be converted to tags by including their name in the environment varia
 
 ----
 
+### Met Office Integration
+
+The tool can also forward reports onwar into the Met Office's [Weather Observations Website (WOW)](https://wow.metoffice.gov.uk/) service
+
+If you wish to use this, you need to set the following environment variables
+
+    -e MET_OFFICE_WOW_ENABLED="yes" \
+    -e MET_OFFICE_SITE_ID="" \
+    -e MET_OFFICE_SITE_PIN=""
+
+Your site ID is a uuid (something like `ffffffff-aaaa-1111-cccc-kkkkkkkk`). The PIN is whatever you put in the field `Authentication Key` when setting up the site.
+
+
+----
+
 ### License
 
 Copyright (c) 2022 Ben Tasker.

@@ -22,8 +22,15 @@ ENV TEMP_C "yes"
 # Sorry everyone, I'm British
 ENV SPEED_KPH "no"
 
+ENV MET_OFFICE_WOW_ENABLED "no"
+ENV MET_OFFICE_SITE_ID ""
+ENV MET_OFFICE_SITE_PIN ""
+ENV MET_OFFICE_SOFTWARE_IDENT "github.com/bentasker/Ecowitt_to_InfluxDB"
+ENV MET_OFFICE_UPDATE_INTERVAL "5"
+ENV MET_OFFICE_URL "https://wow.metoffice.gov.uk/automaticreading"
 
-RUN pip install flask influxdb_client
+
+RUN pip install flask influxdb_client requests
 
 COPY app /app
 
