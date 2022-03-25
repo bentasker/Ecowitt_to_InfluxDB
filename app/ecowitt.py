@@ -88,26 +88,28 @@ def receiveEcoWitt():
             tagset[key] = val
             continue
         
+        val = float(val)
+        
         if TEMP_C and key.startswith("temp") and key.endswith("f"):
             val = convertFtoC(val)
             key = key[:-1] + 'c'
 
         if PRESSURE_HPA and key.startswith("barom") and key.endswith("in"):
             # Convert inches to hPa
-            val = float(val) * 33.6585
+            val = val * 33.6585
             key = key[:-2] + 'hpa'
 
         if RAIN_MM and (key.endswith("rainin") or key == "rainratein"):
             # Convert inches to mm
-            val = float(val) * 25.4
+            val = val * 25.4
             key = key[:-2] + 'mm'
 
         if SPEED_KPH and key.endswith('mph'):
-            speed = float(value) * 1.60934
+            speed = val * 1.60934
             key = key[:-3] + 'kph'
 
         if SPEED_KPH and key == "maxdailygust":
-            speed = float(value) * 1.60934
+            speed = val * 1.60934
             key += "kph"
             
 
@@ -115,42 +117,38 @@ def receiveEcoWitt():
         fieldset[key] = val
         
     # turn it into LP
-    lp = build_lp(tagset, fieldset)
-    write_lp(lp)
+    pt = build_point(tagset, fieldset)
+    write_lp(pt)
     
     if DEBUG:
-        print(lp)
+        print(pt)
         
-    return lp
+    return ''
 
 
 
-def write_lp(lp):
+def write_lp(pt):
     ''' Set up to send into Influx
     '''
     with influxdb_client.InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG) as client:
         write_api = client.write_api(write_options=SYNCHRONOUS)
-        write_api.write(INFLUX_BUCKET, INFLUX_ORG, lp)
+        write_api.write(INFLUX_BUCKET, INFLUX_ORG, pt)
         
     
     
-def build_lp(tagset, fieldset):
+def build_point(tagset, fieldset):
     ''' Build some line protocol
     '''
-    s = [f"{MEASUREMENT},"]
-
-    for tag in tagset:
-        s.append(f"{tag}={tagset[tag]},")
-        
-    s = [''.join(s)]
-    s[0] = s[0].rstrip(",")
-    s.append(" ")
     
+    pt = influxdb_client.Point(MEASUREMENT)
+    
+    for tag in tagset:
+        pt.tag(tag, tagset[tag])
+        
     for field in fieldset:
-        s += f"{field}={fieldset[field]},"
-    s = ''.join(s)
-    s = s.rstrip(",")
-    return s
+        pt.field(field, fieldset[field])
+        
+    return pt
 
 
 def convertFtoC(f):
